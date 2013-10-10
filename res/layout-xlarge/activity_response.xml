@@ -1,0 +1,128 @@
+<AbsoluteLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000000"
+    tools:context=".ResponseActivity" >
+
+    <ImageButton
+        android:id="@+id/image_main"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:layout_x="290dp"
+        android:layout_y="300dp"
+        android:background="@drawable/ic_launcher"
+        android:scaleType="fitXY"
+        android:src="@drawable/round_btn_sub" />
+
+    <ImageButton
+        android:id="@+id/image_sub5"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_x="485dp"
+        android:layout_y="548dp"
+        android:background="@drawable/ic_launcher"
+        android:scaleType="fitXY"
+        android:src="@drawable/round_btn_sub" />
+
+    <ImageButton
+        android:id="@+id/image_sub3"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_x="567dp"
+        android:layout_y="327dp"
+        android:background="@drawable/ic_launcher"
+        android:scaleType="fitXY"
+        android:src="@drawable/round_btn_sub" />
+
+    <ImageButton
+        android:id="@+id/image_sub2"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_x="504dp"
+        android:layout_y="214dp"
+        android:background="@drawable/ic_launcher"
+        android:scaleType="fitXY"
+        android:src="@drawable/round_btn_sub" />
+
+    <ImageButton
+        android:id="@+id/image_sub4"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_x="557dp"
+        android:layout_y="447dp"
+        android:background="@drawable/ic_launcher"
+        android:scaleType="fitXY"
+        android:src="@drawable/round_btn_sub" />
+
+    <ImageButton
+        android:id="@+id/image_sub1"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_x="377dp"
+        android:layout_y="161dp"
+        android:background="@drawable/ic_launcher"
+        android:clickable="true"
+        android:scaleType="fitXY"
+        android:src="@drawable/round_btn_sub" />
+
+    <ImageButton
+        android:id="@+id/image_sub6"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_x="366dp"
+        android:layout_y="596dp"
+        android:background="@drawable/ic_launcher"
+        android:scaleType="fitXY"
+        android:src="@drawable/round_btn_sub" />
+
+    <ImageButton
+        android:id="@+id/image_sub8"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_x="169dp"
+        android:layout_y="429dp"
+        android:background="@drawable/ic_launcher"
+        android:scaleType="fitXY"
+        android:src="@drawable/round_btn_sub" />
+
+    <ImageButton
+        android:id="@+id/image_sub9"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_x="170dp"
+        android:layout_y="306dp"
+        android:background="@drawable/ic_launcher"
+        android:scaleType="fitXY"
+        android:src="@drawable/round_btn_sub" />
+
+    <ImageButton
+        android:id="@+id/image_sub10"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_x="248dp"
+        android:layout_y="202dp"
+        android:background="@drawable/ic_launcher"
+        android:scaleType="fitXY"
+        android:src="@drawable/round_btn_sub" />
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_x="199dp"
+        android:layout_y="790dp"
+        android:text="Developed By : Anees Thyrantakath"
+        android:textSize="25sp" />
+
+    <ImageButton
+        android:id="@+id/image_sub7"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_x="241dp"
+        android:layout_y="538dp"
+        android:background="@drawable/ic_launcher"
+        android:scaleType="fitXY"
+        android:src="@drawable/round_btn_sub" />
+
+</AbsoluteLayout>
