@@ -6,5 +6,6 @@
     <string name="Go">GO!</string>
     <string name="hint">screen_name</string>
     <string name="title_activity_response">ResponseActivity</string>
+    <string name="home">Welcome to the Multunus Twitter puzzle!</string>
 
 </resources>
