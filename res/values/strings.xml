@@ -6,7 +6,10 @@
     <string name="symbolatTheRateOf">\@</string>
     <string name="Go">GO!</string>
     <string name="hint">screen_name</string>
-    <string name="title_activity_response">ResponseActivity</string>
     <string name="home">Welcome to the Multunus Twitter puzzle!</string>
+    <string name="developed_by">Developed By : Anees Thyrantakath</string>
+    <string name="image_btn_content_description"></string>
+
+    <color name="black">#000000</color>
 
 </resources>
