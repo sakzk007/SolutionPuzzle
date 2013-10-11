@@ -25,13 +25,14 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 
 public class ResponseActivity extends Activity implements OnClickListener {
-	ImageButton main_button, btn1, btn2, btn3, btn4, btn5, btn6, btn7, btn8,
-			btn9, btn10;
-	ArrayList<Retweets> rtwts;
-	String main_image_url;
-	public GetImagesUser getImageUser = null;
-	public GetMainUerImage getMainImageUser = null;
+	private ImageButton main_button, btn1, btn2, btn3, btn4, btn5, btn6, btn7,
+			btn8, btn9, btn10;
+	private ArrayList<Retweets> rtwts;
+	private String main_image_url;
+	private GetImagesUser getImageUser = null;
+	private GetMainUerImage getMainImageUser = null;
 
+	@SuppressWarnings("unchecked")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -52,10 +53,10 @@ public class ResponseActivity extends Activity implements OnClickListener {
 				getImageUser = new GetImagesUser();
 				getImageUser.execute(rtwts);
 			}
-
 		}
 	}
 
+	// Initializing variable
 	private void initVars() {
 		main_button = (ImageButton) findViewById(R.id.image_main);
 		btn1 = (ImageButton) findViewById(R.id.image_sub1);
@@ -144,93 +145,118 @@ public class ResponseActivity extends Activity implements OnClickListener {
 		@Override
 		protected Bitmap doInBackground(String... params) {
 			Bitmap map = null;
-			map = downloadImage(params[0]);
+			try {
+				map = downloadImage(params[0]);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 			return map;
 		}
 
 		@Override
 		protected void onPostExecute(Bitmap result) {
 			super.onPostExecute(result);
+			getMainImageUser = null;
 			main_button.setImageBitmap(result);
-			// main_button.setImageBitmap(result.createScaledBitmap(result, 120,
-			// 120, false));
-
 		}
 
+		@Override
+		protected void onCancelled() {
+			super.onCancelled();
+			getMainImageUser = null;
+		}
 	}
 
 	// Fetching Retweeted Images
 	private class GetImagesUser extends
-			AsyncTask<ArrayList<Retweets>, Void, ArrayList<UpdateUser>> {
+			AsyncTask<ArrayList<Retweets>, Void, ArrayList<Bitmap>> {
 		@Override
-		protected ArrayList<UpdateUser> doInBackground(
-				ArrayList<Retweets>... urls) {
+		protected ArrayList<Bitmap> doInBackground(ArrayList<Retweets>... urls) {
 			Bitmap map = null;
 			ArrayList<Retweets> list = urls[0];
-			ArrayList<UpdateUser> user = new ArrayList<UpdateUser>();
+			ArrayList<Bitmap> user = new ArrayList<Bitmap>();
 			for (int i = 0; i < 10; i++) {
-				map = downloadImage(list.get(i).getImageURL());
-				UpdateUser uu = new UpdateUser(i, map);
-				user.add(uu);
+				try {
+					map = downloadImage(list.get(i).getImageURL());
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				user.add(map);
 			}
 			return user;
 		}
 
 		// Sets the Bitmap returned by doInBackground
 		@Override
-		protected void onPostExecute(ArrayList<UpdateUser> result) {
-			for (int j = 0; j < result.size(); j++) {
+		protected void onPostExecute(ArrayList<Bitmap> result) {
+			super.onPostExecute(result);
+			getImageUser = null;
+			int size_of_result = result.size();
+			for (int i = 0; i < size_of_result; i++) {
 				Bitmap map = null;
-				int i;
-				i = result.get(j).getIntex();
-				map = result.get(j).getUserImage();
-				if (i == 0) {
+				map = result.get(i);
+				switch (i) {
+				case 0:
 					btn1.setImageBitmap(map);
-				} else if (i == 1) {
+					break;
+				case 1:
 					btn2.setImageBitmap(map);
-				} else if (i == 2) {
+					break;
+				case 2:
 					btn3.setImageBitmap(map);
-				} else if (i == 3) {
+					break;
+				case 3:
 					btn4.setImageBitmap(map);
-				} else if (i == 4) {
+					break;
+				case 4:
 					btn5.setImageBitmap(map);
-				} else if (i == 5) {
+					break;
+				case 5:
 					btn6.setImageBitmap(map);
-				} else if (i == 6) {
+					break;
+				case 6:
 					btn7.setImageBitmap(map);
-				} else if (i == 7) {
+					break;
+				case 7:
 					btn8.setImageBitmap(map);
-				} else if (i == 8) {
+					break;
+				case 8:
 					btn9.setImageBitmap(map);
-				} else if (i == 9) {
+					break;
+				case 9:
 					btn10.setImageBitmap(map);
+					break;
+				default:
+					break;
 				}
 			}
 		}
 
+		@Override
+		protected void onCancelled() {
+			super.onCancelled();
+			getImageUser = null;
+		}
 	}
 
-	// Creates Bitmap from InputStream and returns it
-	public Bitmap downloadImage(String url) {
+	// Creates Bitmap from InputStream
+	private Bitmap downloadImage(String url) throws IOException {
 		Bitmap bitmap = null;
 		InputStream stream = null;
 		BitmapFactory.Options bmOptions = new BitmapFactory.Options();
 		bmOptions.inSampleSize = 1;
 
-		try {
-			stream = getHttpConnection(url);
-			bitmap = BitmapFactory.decodeStream(stream, null, bmOptions);
-			stream.close();
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
+		stream = getHttpConnection(url);
+		bitmap = BitmapFactory.decodeStream(stream, null, bmOptions);
+		stream.close();
+
 		Bitmap circleBitmap = getCircularBitmap(bitmap);
 		return circleBitmap;
 	}
 
+	// Drawing Circle
 	private Bitmap getCircularBitmap(Bitmap bitmap) {
 		Bitmap output;
-
 		if (bitmap.getWidth() > bitmap.getHeight()) {
 			output = Bitmap.createBitmap(bitmap.getHeight(),
 					bitmap.getHeight(), Config.ARGB_8888);
@@ -238,21 +264,16 @@ public class ResponseActivity extends Activity implements OnClickListener {
 			output = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getWidth(),
 					Config.ARGB_8888);
 		}
-
 		Canvas canvas = new Canvas(output);
-
 		final int color = 0xff424242;
 		final Paint paint = new Paint();
 		final Rect rect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
-
 		float r = 0;
-
 		if (bitmap.getWidth() > bitmap.getHeight()) {
 			r = bitmap.getHeight() / 2;
 		} else {
 			r = bitmap.getWidth() / 2;
 		}
-
 		paint.setAntiAlias(true);
 		canvas.drawARGB(0, 0, 0, 0);
 		paint.setColor(color);
@@ -262,23 +283,20 @@ public class ResponseActivity extends Activity implements OnClickListener {
 		return output;
 	}
 
-	// Makes HttpURLConnection and returns InputStream
-	public InputStream getHttpConnection(String urlString) throws IOException {
+	// Creating InputStream from URL
+	private InputStream getHttpConnection(String urlString) throws IOException {
 		InputStream stream = null;
 		URL url = new URL(urlString);
 		URLConnection connection = url.openConnection();
 
-		try {
-			HttpURLConnection httpConnection = (HttpURLConnection) connection;
-			httpConnection.setRequestMethod("GET");
-			httpConnection.connect();
+		HttpURLConnection httpConnection = (HttpURLConnection) connection;
+		httpConnection.setRequestMethod("GET");
+		httpConnection.connect();
 
-			if (httpConnection.getResponseCode() == HttpURLConnection.HTTP_OK) {
-				stream = httpConnection.getInputStream();
-			}
-		} catch (Exception ex) {
-			ex.printStackTrace();
+		if (httpConnection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+			stream = httpConnection.getInputStream();
 		}
+
 		return stream;
 	}
 

@@ -1,11 +1,15 @@
 package com.anees.solutionpuzzle;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Set;
 import java.util.TreeSet;
+
+import org.apache.http.client.ClientProtocolException;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -22,12 +26,11 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 public class MainActivity extends Activity {
-	String screen_name = null;
-	EditText et_screen_name;
-	ProgressDialog wait;
-	CheckInternet ci;
-	Boolean isInternetPresent = false;
-	public GetFeedTask myAsyncTask = null;
+	private String screen_name = null;
+	private EditText et_screen_name;
+	private ProgressDialog wait;
+	private CheckInternet ci;
+	private GetFeedTask myAsyncTask = null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -36,11 +39,11 @@ public class MainActivity extends Activity {
 		et_screen_name = (EditText) findViewById(R.id.et_screen);
 		Button btn_get_feed = (Button) findViewById(R.id.btn_get_feed);
 		ci = new CheckInternet(getApplicationContext());
+
 		btn_get_feed.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				isInternetPresent = ci.isConnectingToInternet();
-				if (isInternetPresent) {
+				if (ci.isConnectingToInternet()) {
 					screen_name = et_screen_name.getText().toString().trim();
 					if (screen_name.length() == 0 || screen_name == null) {
 						Toast.makeText(getApplicationContext(),
@@ -61,10 +64,8 @@ public class MainActivity extends Activity {
 			private void showAlert() {
 				AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
 						MainActivity.this);
-
 				// set title
 				alertDialogBuilder.setTitle("Internet not connected!");
-
 				// set dialog message
 				alertDialogBuilder
 						.setMessage("Connect to internet! \n\t Try Again!")
@@ -81,7 +82,6 @@ public class MainActivity extends Activity {
 				AlertDialog alertDialog = alertDialogBuilder.create();
 				// show it
 				alertDialog.show();
-
 			}
 		});
 	}
@@ -90,6 +90,7 @@ public class MainActivity extends Activity {
 		String profile_image_url;
 		ArrayList<Retweets> retweet = new ArrayList<Retweets>();
 		boolean process_status = true;
+		JsonParser jsonParser = new JsonParser();
 
 		@Override
 		protected void onPreExecute() {
@@ -103,124 +104,137 @@ public class MainActivity extends Activity {
 
 		@Override
 		protected Void doInBackground(String... params) {
-			String URL_PROFILE_IMAGE = "https://api.twitter.com/1.1/users/show.json?screen_name="
-					+ params[0];
-			String URL_TWEETED_IDS = "https://api.twitter.com/1.1/statuses/user_timeline.json?suppress_response_codes&trim_user=true&include_entities=false&include_rts=true&exclude_replies=true&count=13&screen_name="
-					+ params[0];
+			StringBuilder url_profile_image = new StringBuilder().append(
+					"https://api.twitter.com/1.1/users/show.json?screen_name=")
+					.append(params[0]);
+			StringBuilder url_tweeted_ids = new StringBuilder()
+					.append("https://api.twitter.com/1.1/statuses/user_timeline.json?suppress_response_codes&trim_user=true&include_entities=false&include_rts=true&exclude_replies=true&count=13&screen_name=")
+					.append(params[0]);
+
 			// Fetching Profile Image URL
 			try {
-				JsonParser jsonParser = new JsonParser();
-				JSONObject json = null;
-				JSONArray jsonArray = null;
-				json = jsonParser.getJsonObjectFromURL(URL_PROFILE_IMAGE);
-				profile_image_url = json.getString("profile_image_url");
-				Log.d("Profile Image URL", profile_image_url);
-				// Fetching Tweeted Id's If image URL is not null
-				if (profile_image_url.length() != 0
-						&& profile_image_url != null) {
-					try {
-						ArrayList<String> ids = new ArrayList<String>();
-						jsonArray = jsonParser
-								.getJSONArrayFromURL(URL_TWEETED_IDS);
-						for (int i = 0; i < jsonArray.length(); i++) {
-							JSONObject jObj = jsonArray.getJSONObject(i);
-							ids.add(jObj.getString("id_str"));
-						}
-						Log.d("Tweet IDS : ", ids.toString());
-						Log.d("Tweet IDS Length : ", "" + ids.size());
-						// Fetching Retweeted User Details
-						if (ids.size() != 0) {
-							jsonArray = null;
-							for (String arr : ids) {
-								String URL_RETWEET = "https://api.twitter.com/1.1/statuses/retweets/"
-										+ arr + ".json";
-								try {
-									jsonArray = jsonParser
-											.getJSONArrayFromURL(URL_RETWEET);
-									for (int i = 0; i < jsonArray.length(); i++) {
-										String name1, url1;
-										int followers1;
-										JSONObject jObj = jsonArray
-												.getJSONObject(i);
-										JSONObject jObj1 = jObj
-												.getJSONObject("user");
-										name1 = jObj1.getString("name");
-										followers1 = jObj1
-												.getInt("followers_count");
-										url1 = jObj1
-												.getString("profile_image_url");
-										Retweets tw = new Retweets(name1, url1,
-												followers1);
-										retweet.add(tw);
-
-									}
-								} catch (Exception e) {
-									Log.e("Error Getting Retweeted Details",
-											URL_RETWEET);
-								}
-							}
-							// Removing Duplicates
-							try {
-								Set<Retweets> s = new TreeSet<Retweets>(
-										new Comparator<Retweets>() {
-
-											@Override
-											public int compare(Retweets lhs,
-													Retweets rhs) {
-												// compare the two object
-												return ((Integer) lhs
-														.getFollowers())
-														.compareTo((Integer) rhs
-																.getFollowers());
-											}
-
-										});
-								s.addAll(retweet);
-								retweet.clear();
-								retweet.addAll(s);
-								Log.d("-------------", "*******************");
-								Collections.reverse(retweet);
-							} catch (Exception e) {
-								Log.e("Error SORTING", e.getMessage());
-							}
-						}
-					} catch (Exception e) {
-						process_status = false;
-						Log.e("Error Getting Tweeted Ids", URL_TWEETED_IDS);
-					}
-				}
-
-			} catch (Exception e) {
+				fetchProfileImageFromURL(url_profile_image.toString(),
+						url_tweeted_ids.toString());
+			} catch (JSONException e) {
 				process_status = false;
-				Log.e("Error Downloading Profile Image from URL",
-						URL_PROFILE_IMAGE);
+				e.printStackTrace();
+			} catch (ClientProtocolException e) {
+				process_status = false;
+				e.printStackTrace();
+			} catch (IOException e) {
+				process_status = false;
+				e.printStackTrace();
 			}
+
 			return null;
+		}
+
+		private void fetchProfileImageFromURL(String profileImageURL,
+				String urlTweetedIDs) throws JSONException,
+				ClientProtocolException, IOException {
+
+			JSONObject json = null;
+			json = jsonParser.getJsonObjectFromURL(profileImageURL);
+			profile_image_url = json.getString("profile_image_url");
+			Log.d("Profile Image URL", profile_image_url);
+			// Fetching Tweeted Id's If image URL is not null
+			if (profile_image_url.length() != 0 && profile_image_url != null) {
+				fetchTweetedIDsFromURL(urlTweetedIDs);
+			}
+		}
+
+		// Fetching Tweeted Ids from URL
+		private void fetchTweetedIDsFromURL(String urlTweetedIDs)
+				throws JSONException, ClientProtocolException, IOException {
+
+			ArrayList<String> ids = new ArrayList<String>();
+			JSONArray jsonArray_id = null;
+			jsonArray_id = jsonParser.getJSONArrayFromURL(urlTweetedIDs);
+
+			int jsonArray_length = jsonArray_id.length();
+
+			for (int i = 0; i < jsonArray_length; i++) {
+				JSONObject jObj = jsonArray_id.getJSONObject(i);
+				ids.add(jObj.getString("id_str"));
+			}
+			Log.d("Tweet IDS : ", ids.toString());
+			Log.d("Tweet IDS Length : ", "" + ids.size());
+			// Fetching Retweeted User Details
+			if (ids.size() != 0) {
+				for (String arr : ids) {
+
+					StringBuilder url_retweet = new StringBuilder()
+							.append("https://api.twitter.com/1.1/statuses/retweets/")
+							.append(arr).append(".json");
+					// Fetch User Details from ReTweet ID's
+					fetchUserDetailsFromReTweetedIdsURL(url_retweet.toString());
+				}
+				// Removing Duplicates
+				Set<Retweets> s = new TreeSet<Retweets>(
+						new Comparator<Retweets>() {
+
+							@Override
+							public int compare(Retweets lhs, Retweets rhs) {
+								// compare the two object
+								return ((Integer) lhs.getFollowers())
+										.compareTo((Integer) rhs.getFollowers());
+							}
+
+						});
+				s.addAll(retweet);
+				retweet.clear();
+				retweet.addAll(s);
+				Collections.reverse(retweet);
+			}
+
+		}
+
+		// Collect ReTweeted User Details
+		private void fetchUserDetailsFromReTweetedIdsURL(String reTweetedUserIds)
+				throws JSONException, ClientProtocolException, IOException {
+
+			JSONArray jsonArray_ReTweetedIDs = null;
+			jsonArray_ReTweetedIDs = jsonParser
+					.getJSONArrayFromURL(reTweetedUserIds);
+
+			int length_of_jsonArray = jsonArray_ReTweetedIDs.length();
+
+			for (int i = 0; i < length_of_jsonArray; i++) {
+				String name1, url1;
+				int followers1;
+				JSONObject jObj = jsonArray_ReTweetedIDs.getJSONObject(i);
+				JSONObject jObj1 = jObj.getJSONObject("user");
+				name1 = jObj1.getString("name");
+				followers1 = jObj1.getInt("followers_count");
+				url1 = jObj1.getString("profile_image_url");
+				Retweets tw = new Retweets(name1, url1, followers1);
+				retweet.add(tw);
+
+			}
+
 		}
 
 		@Override
 		protected void onPostExecute(Void result) {
 			super.onPostExecute(result);
 			myAsyncTask = null;
+			int retweet_size = retweet.size();
 			if (process_status == false) {
 				Toast.makeText(getApplicationContext(),
 						"Unable to Process\n Try Again", Toast.LENGTH_SHORT)
 						.show();
-			} else if (retweet.size() < 10) {
+			} else if (retweet_size < 10) {
 				Toast.makeText(getApplicationContext(),
 						"Cant Process Response For this User",
 						Toast.LENGTH_SHORT).show();
 			} else {
-				// Processing Details
-				ArrayList<Retweets> parceRetweet = new ArrayList<Retweets>();
-				for (int i = 0; i < 10; i++) {
-					parceRetweet.add(retweet.get(i));
-				}
+				// Making ArrayList of Size 10
+				retweet.subList(10, retweet_size).clear();
 
 				Intent i = new Intent(getApplicationContext(),
 						ResponseActivity.class);
 				Bundle b = new Bundle();
-				b.putParcelableArrayList("retweets", parceRetweet);
+				b.putParcelableArrayList("retweets", retweet);
 				b.putString("main_img_url", profile_image_url);
 				i.putExtras(b);
 				startActivity(i);
