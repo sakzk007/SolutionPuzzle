@@ -16,11 +16,13 @@ public class CheckInternet {
 				.getSystemService(Context.CONNECTIVITY_SERVICE);
 		if (connectivity != null) {
 			NetworkInfo[] info = connectivity.getAllNetworkInfo();
-			if (info != null)
-				for (int i = 0; i < info.length; i++)
+			if (info != null) {
+				int length_connections = info.length;
+				for (int i = 0; i < length_connections; i++)
 					if (info[i].getState() == NetworkInfo.State.CONNECTED) {
 						return true;
 					}
+			}
 		}
 		return false;
 	}

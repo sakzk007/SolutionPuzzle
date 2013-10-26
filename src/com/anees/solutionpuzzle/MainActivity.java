@@ -1,13 +1,22 @@
 package com.anees.solutionpuzzle;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.StatusLine;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.BasicHttpParams;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -31,6 +40,7 @@ public class MainActivity extends Activity {
 	private ProgressDialog wait;
 	private CheckInternet ci;
 	private GetFeedTask myAsyncTask = null;
+	final String oauth_key = "Bearer AAAAAAAAAAAAAAAAAAAAAH2TTgAAAAAA0pDT3i7w2c0r1fkkAxgkupuzhR4%3DYwj22QQEXS5INepTzmniEv9rcyfpUEZDb4oSlAOozA";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -90,7 +100,6 @@ public class MainActivity extends Activity {
 		String profile_image_url;
 		ArrayList<Retweets> retweet = new ArrayList<Retweets>();
 		boolean process_status = true;
-		JsonParser jsonParser = new JsonParser();
 
 		@Override
 		protected void onPreExecute() {
@@ -132,9 +141,8 @@ public class MainActivity extends Activity {
 		private void fetchProfileImageFromURL(String profileImageURL,
 				String urlTweetedIDs) throws JSONException,
 				ClientProtocolException, IOException {
-
-			JSONObject json = null;
-			json = jsonParser.getJsonObjectFromURL(profileImageURL);
+			JSONObject json = new JSONObject(
+					getJsonStringFromURL(profileImageURL));
 			profile_image_url = json.getString("profile_image_url");
 			Log.d("Profile Image URL", profile_image_url);
 			// Fetching Tweeted Id's If image URL is not null
@@ -143,14 +151,41 @@ public class MainActivity extends Activity {
 			}
 		}
 
+		// Generating Json String Response
+		private String getJsonStringFromURL(String url)
+				throws ClientProtocolException, IOException {
+			DefaultHttpClient httpclient = new DefaultHttpClient(
+					new BasicHttpParams());
+			HttpGet httpget = new HttpGet(url);
+
+			httpget.setHeader("Authorization", oauth_key);
+			httpget.setHeader("Content-type", "application/json");
+
+			InputStream inputStream = null;
+			HttpResponse response = httpclient.execute(httpget);
+			StatusLine statusLine = response.getStatusLine();
+			int statusCode = statusLine.getStatusCode();
+			Log.w("Status Code", "" + statusCode);
+			StringBuilder sb = new StringBuilder();
+			if (statusCode == 200) {
+				HttpEntity entity = response.getEntity();
+				inputStream = entity.getContent();
+				BufferedReader reader = new BufferedReader(
+						new InputStreamReader(inputStream, "UTF-8"), 8);
+				String line = null;
+				while ((line = reader.readLine()) != null) {
+					sb.append(line + "\n");
+				}
+			}
+			return sb.toString();
+		}
+
 		// Fetching Tweeted Ids from URL
 		private void fetchTweetedIDsFromURL(String urlTweetedIDs)
 				throws JSONException, ClientProtocolException, IOException {
-
 			ArrayList<String> ids = new ArrayList<String>();
-			JSONArray jsonArray_id = null;
-			jsonArray_id = jsonParser.getJSONArrayFromURL(urlTweetedIDs);
-
+			JSONArray jsonArray_id = new JSONArray(
+					getJsonStringFromURL(urlTweetedIDs));
 			int jsonArray_length = jsonArray_id.length();
 
 			for (int i = 0; i < jsonArray_length; i++) {
@@ -179,7 +214,6 @@ public class MainActivity extends Activity {
 								return ((Integer) lhs.getFollowers())
 										.compareTo((Integer) rhs.getFollowers());
 							}
-
 						});
 				s.addAll(retweet);
 				retweet.clear();
@@ -192,11 +226,8 @@ public class MainActivity extends Activity {
 		// Collect ReTweeted User Details
 		private void fetchUserDetailsFromReTweetedIdsURL(String reTweetedUserIds)
 				throws JSONException, ClientProtocolException, IOException {
-
-			JSONArray jsonArray_ReTweetedIDs = null;
-			jsonArray_ReTweetedIDs = jsonParser
-					.getJSONArrayFromURL(reTweetedUserIds);
-
+			JSONArray jsonArray_ReTweetedIDs = new JSONArray(
+					getJsonStringFromURL(reTweetedUserIds));
 			int length_of_jsonArray = jsonArray_ReTweetedIDs.length();
 
 			for (int i = 0; i < length_of_jsonArray; i++) {
@@ -209,9 +240,7 @@ public class MainActivity extends Activity {
 				url1 = jObj1.getString("profile_image_url");
 				Retweets tw = new Retweets(name1, url1, followers1);
 				retweet.add(tw);
-
 			}
-
 		}
 
 		@Override

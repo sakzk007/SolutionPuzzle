@@ -4,9 +4,9 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class Retweets implements Parcelable {
-	public String name = "";
-	public String url = "";
-	public int followers;
+	private String name = "";
+	private String url = "";
+	private int followers;
 
 	public Retweets(String name, String url, int followers) {
 		this.name = name;
