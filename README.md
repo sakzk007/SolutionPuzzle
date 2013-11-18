@@ -9,9 +9,9 @@ Home Screen
 ![first screen](https://github.com/sakzk007/SolutionPuzzle/blob/master/assets/home_sachin.png?raw=true)
 
 Processing..
-![Processing tweets](https://github.com/sakzk007/SolutionPuzzle/blob/master/assets/processing_sachin.png)
+![Processing tweets](https://github.com/sakzk007/SolutionPuzzle/blob/master/assets/processing_sachin.png?raw=true)
 
 Response
-![Output](https://github.com/sakzk007/SolutionPuzzle/blob/master/assets/result_sachin.png)
+![Output](https://github.com/sakzk007/SolutionPuzzle/blob/master/assets/result_sachin.png?raw=true)
 If you click on each image surrounding to main image it will give that particular users followers count.
 
