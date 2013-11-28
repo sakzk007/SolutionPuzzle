@@ -85,37 +85,42 @@ public class ResponseActivity extends Activity implements OnClickListener {
     public void onClick(View v) {
 	switch (v.getId()) {
 	case R.id.image_sub1:
-	    rtwts.get(0).getFollowers();
-	    Toast.makeText(getApplicationContext(), "" + rtwts.get(0).getFollowers(), Toast.LENGTH_SHORT).show();
+	    showToast(rtwts.get(0).getFollowers());
 	    break;
 	case R.id.image_sub2:
-	    Toast.makeText(getApplicationContext(), "" + rtwts.get(1).getFollowers(), Toast.LENGTH_SHORT).show();
+	    showToast(rtwts.get(1).getFollowers());
 	    break;
 	case R.id.image_sub3:
-	    Toast.makeText(getApplicationContext(), "" + rtwts.get(2).getFollowers(), Toast.LENGTH_SHORT).show();
+	    showToast(rtwts.get(2).getFollowers());
 	    break;
 	case R.id.image_sub4:
-	    Toast.makeText(getApplicationContext(), "" + rtwts.get(3).getFollowers(), Toast.LENGTH_SHORT).show();
+	    showToast(rtwts.get(3).getFollowers());
 	    break;
 	case R.id.image_sub5:
-	    Toast.makeText(getApplicationContext(), "" + rtwts.get(4).getFollowers(), Toast.LENGTH_SHORT).show();
+	    showToast(rtwts.get(4).getFollowers());
 	    break;
 	case R.id.image_sub6:
-	    Toast.makeText(getApplicationContext(), "" + rtwts.get(5).getFollowers(), Toast.LENGTH_SHORT).show();
+	    showToast(rtwts.get(5).getFollowers());
 	    break;
 	case R.id.image_sub7:
-	    Toast.makeText(getApplicationContext(), "" + rtwts.get(6).getFollowers(), Toast.LENGTH_SHORT).show();
+	    showToast(rtwts.get(6).getFollowers());
 	    break;
 	case R.id.image_sub8:
-	    Toast.makeText(getApplicationContext(), "" + rtwts.get(7).getFollowers(), Toast.LENGTH_SHORT).show();
+	    showToast(rtwts.get(7).getFollowers());
 	    break;
 	case R.id.image_sub9:
-	    Toast.makeText(getApplicationContext(), "" + rtwts.get(8).getFollowers(), Toast.LENGTH_SHORT).show();
+	    showToast(rtwts.get(8).getFollowers());
 	    break;
 	case R.id.image_sub10:
-	    Toast.makeText(getApplicationContext(), "" + rtwts.get(9).getFollowers(), Toast.LENGTH_SHORT).show();
+	    showToast(rtwts.get(9).getFollowers());
 	    break;
 	}
+    }
+
+    // Displaying Followers count as Toast Message
+    private void showToast(int followers) {
+	Toast.makeText(getApplicationContext(), "" + followers, Toast.LENGTH_SHORT).show();
+
     }
 
     // Fetching main Image
